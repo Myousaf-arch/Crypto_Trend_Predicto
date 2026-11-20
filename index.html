@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Crypto Price Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(224, 242, 254, 0.8) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(238, 242, 255, 0.8) 0px, transparent 50%);
+            color: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 20px;
+            padding: 36px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05),
+                        0 0 15px rgba(0, 0, 0, 0.02);
+            transition: transform 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            color: #0f172a;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            outline: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        input:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
+        }
+
+        button {
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+        }
+
+        button:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .loader {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .result {
+            margin-top: 24px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 14px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .result-row:first-child {
+            padding-top: 0;
+        }
+
+        .label-text {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .value-text {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        .bullish {
+            color: #16a34a;
+            background: #f0fdf4;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #bbf7d0;
+        }
+
+        .bearish {
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #fecaca;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <span class="badge">Transformer Architecture</span>
+            <h2>Market Predictor</h2>
+            <p class="subtitle">AI-Powered Financial Forecasting</p>
+        </div>
+
+        <div class="input-group">
+            <label for="tickerInput">Asset Ticker</label>
+            <input type="text" id="tickerInput" value="BTC-USD" placeholder="e.g. BTC-USD, ETH-USD">
+        </div>
+
+        <button onclick="getPrediction()" id="predictBtn">Generate Prediction</button>
+
+        <div class="loader" id="loader">Fetching live market data...</div>
+
+        <div class="result" id="resultBox">
+            <div class="result-row">
+                <span class="label-text">Asset</span>
+                <span class="value-text" id="resTicker">-</span>
+            </div>
+            <div class="result-row">
+                <span class="label-text">Current Price</span>
+                <span class="value-text" id="resCurrent">-</span>
+            </div>
+            <div class="result-row">
+                <span class="label-text">Predicted Price</span>
+                <span class="value-text" id="resPredicted">-</span>
+            </div>
+            <div class="result-row">
+                <span class="label-text">Expected Trend</span>
+                <span id="resTrend">-</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function getPrediction() {
+            const ticker = document.getElementById('tickerInput').value.trim();
+            const resultBox = document.getElementById('resultBox');
+            const loader = document.getElementById('loader');
+            const btn = document.getElementById('predictBtn');
+
+            if(!ticker) {
+                alert("Please enter a valid ticker symbol.");
+                return;
+            }
+
+            resultBox.style.display = 'none';
+            loader.style.display = 'block';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/predict/${ticker}`);
+                const data = await response.json();
+
+                if(data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    document.getElementById('resTicker').innerText = data.coin;
+                    document.getElementById('resCurrent').innerText = `$${data.aaj_ki_price.toLocaleString()}`;
+                    document.getElementById('resPredicted').innerText = `$${data.kal_ki_prediction.toLocaleString()}`;
+
+                    const trendElem = document.getElementById('resTrend');
+                    
+                    // Convert internal trend logic to professional English UI tags
+                    if(data.trend.includes("Upar")) {
+                        trendElem.innerText = "Bullish ↗";
+                        trendElem.className = "bullish";
+                    } else {
+                        trendElem.innerText = "Bearish ↘";
+                        trendElem.className = "bearish";
+                    }
+
+                    resultBox.style.display = 'block';
+                }
+            } catch (err) {
+                alert("Failed to connect to the backend server. Make sure Uvicorn is running.");
+            } finally {
+                loader.style.display = 'none';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+    </script>
+</body>
+</html>
