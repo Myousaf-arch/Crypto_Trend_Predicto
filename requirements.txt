@@ -1,0 +1,8 @@
+torch
+yfinance
+streamlit
+numpy
+pandas
+scikit-learn
+fastapi
+uvicorn
